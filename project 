@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI EduBridge | Smart Learning</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fc;color:#17243b}
+header{background:#153e75;color:white;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h2{margin:0}
+button{cursor:pointer;border:0;border-radius:9px;padding:11px 15px;font-weight:bold}
+header button{background:white;color:#153e75}
+.hero{padding:38px 5%;background:linear-gradient(120deg,#174a91,#397ce1);color:white}
+.hero h1{font-size:32px;margin:0 0 12px}
+.hero p{line-height:1.6;max-width:600px}
+.primary{background:#ffca55;color:#17243b;margin-top:8px}
+main{padding:24px 5%;max-width:1100px;margin:auto}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.stat,.card,.panel{background:white;padding:18px;border-radius:14px;box-shadow:0 3px 14px #162d5010}
+.stat strong{font-size:25px;color:#2464b5;display:block;margin-bottom:7px}
+h2{margin-top:12px}
+.courses{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.course-icon{font-size:34px}
+.card h3{margin:10px 0}
+.card p,.panel p{color:#64748b;line-height:1.5}
+.card button,.panel button{background:#2464b5;color:white;margin-top:8px}
+.progress{height:8px;background:#e3eaf5;border-radius:8px;overflow:hidden}
+.bar{height:100%;background:#28a779;width:0;transition:width .3s}
+.panel{margin-top:24px}
+input,select,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccd6e5;border-radius:8px;font:inherit}
+#answer{background:#edf5ff;padding:14px;border-radius:10px;line-height:1.6;white-space:pre-wrap}
+footer{text-align:center;padding:25px;color:#64748b}
+.small{font-size:13px}
+@media(max-width:500px){.hero h1{font-size:26px}.stats{grid-template-columns:1fr}.stat{padding:14px}header{padding:16px 5%}}
+</style>
+</head>
+<body>
+<header>
+  <h2>🎓 AI EduBridge</h2>
+  <button onclick="toggleLanguage()" id="langBtn">தமிழ்</button>
+</header>
+
+<section class="hero">
+  <h1 id="welcome">Learn Without Limits 🚀</h1>
+  <p id="intro">Your personal learning space. Explore courses, take quizzes and practise with your demo AI tutor.</p>
+  <button class="primary" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})" id="explore">Explore Courses ↓</button>
+</section>
+
+<main>
+  <div class="stats">
+    <div class="stat"><strong id="courseCount">0 / 3</strong><span id="completedText">Courses completed</span></div>
+    <div class="stat"><strong id="quizCount">0</strong><span id="quizText">Quiz attempts</span></div>
+    <div class="stat"><strong id="scoreCount">0%</strong><span id="scoreText">Best quiz score</span></div>
+  </div>
+
+  <h2 id="courseTitle">📚 Your Learning Courses</h2>
+  <div class="courses" id="courses"></div>
+
+  <section class="panel">
+    <h2 id="quizTitle">🧠 Quick Knowledge Quiz</h2>
+    <p id="question">Which language is commonly used for AI and machine learning?</p>
+    <div id="quizOptions"></div>
+    <p id="quizResult" aria-live="polite"></p>
+    <button onclick="nextQuestion()" id="nextBtn">Next Question →</button>
+  </section>
+
+  <section class="panel">
+    <h2 id="tutorTitle">🤖 AI Tutor Demo</h2>
+    <p id="tutorIntro">Ask a question about Python, AI, HTML or machine learning.</p>
+    <input id="questionInput" placeholder="Example: What is Python?">
+    <button onclick="askTutor()" id="askBtn">Ask Tutor</button>
+    <div id="answer" style="margin-top:14px;display:none" aria-live="polite"></div>
+    <p class="small" id="demoNote">Demo tutor: answers come from built-in examples, not a live AI service.</p>
+  </section>
+
+  <section class="panel">
+    <h2 id="progressTitle">📈 My Learning Progress</h2>
+    <p id="progressDescription">Complete a course to update your progress.</p>
+    <div class="progress"><div class="bar" id="progressBar"></div></div>
+    <p id="progressLabel">0% completed</p>
+    <button onclick="resetProgress()" id="resetBtn">Reset Progress</button>
+  </section>
+</main>
+
+<footer>AI EduBridge · Smart Learning for Equal Education</footer>
+
+<script>
+const translations = {
+ en: {
+  welcome:"Learn Without Limits 🚀",
+  intro:"Your personal learning space. Explore courses, take quizzes and practise with your demo AI tutor.",
+  explore:"Explore Courses ↓", completedText:"Courses completed",
+  quizText:"Quiz attempts", scoreText:"Best quiz score",
+  courseTitle:"📚 Your Learning Courses", quizTitle:"🧠 Quick Knowledge Quiz",
+  question:"Which language is commonly used for AI and machine learning?",
+  tutorTitle:"🤖 AI Tutor Demo",
+  tutorIntro:"Ask a question about Python, AI, HTML or machine learning.",
+  askBtn:"Ask Tutor", placeholder:"Example: What is Python?",
+  demoNote:"Demo tutor: answers come from built-in examples, not a live AI service.",
+  progressTitle:"📈 My Learning Progress",
+  progressDescription:"Complete a course to update your progress.",
+  resetBtn:"Reset Progress", nextBtn:"Next Question →",
+  courses:[
+   ["🐍","Python Basics","Learn variables, conditions and loops.","Start Learning"],
+   ["🌐","HTML & CSS","Build the structure and design of websites.","Start Learning"],
+   ["🤖","Introduction to AI","Discover artificial intelligence and machine learning.","Start Learning"]
+  ],
+  lessons:["Lesson 1","Lesson 2","Lesson 3"],
+  questions:[
+   ["Which language is commonly used for AI and machine learning?",["Python","HTML","CSS"],0],
+   ["What does HTML help you create?",["Databases","Web page structure","Operating systems"],1],
+   ["What is a machine learning model trained to do?",["Learn patterns from data","Charge a phone","Design a keyboard"],0]
+  ]
+ },
+ ta: {
+  welcome:"Ellai Illaamal Kattrukkol 🚀",
+  intro:"Un learning platform. Courses padi, quiz attend pannu, tutor demo-la practice pannu.",
+  explore:"Courses Paaru ↓", completedText:"Muditha courses",
+  quizText:"Quiz attempts", scoreText:"Best quiz score",
+  courseTitle:"📚 Un Learning Courses", quizTitle:"🧠 Quick Knowledge Quiz",
+  question:"AI matrum machine learning-ku pothuvaga use aagum language ethu?",
+  tutorTitle:"🤖 AI Tutor Demo",
+  tutorIntro:"Python, AI, HTML allathu machine learning patri kelvi kelu.",
+  askBtn:"Tutor-kitta Kelu", placeholder:"Example: What is Python?",
+  demoNote:"Demo tutor: built-in answers mattum. Live AI service illai.",
+  progressTitle:"📈 En Learning Progress",
+  progressDescription:"Progress update aaga oru course complete pannu.",
+  resetBtn:"Progress Reset", nextBtn:"Adutha Question →",
+  courses:[
+   ["🐍","Python Basics","Variables, conditions, loops kathukkol.","Start Learning"],
+   ["🌐","HTML & CSS","Website create panna kathukkol.","Start Learning"],
+   ["🤖","Introduction to AI","Artificial intelligence patri therinjukkol.","Start Learning"]
+  ],
+  lessons:["Lesson 1","Lesson 2","Lesson 3"],
+  questions:[
+   ["AI-ku commonly use aagura language ethu?",["Python","HTML","CSS"],0],
+   ["HTML enna create panna help pannum?",["Database","Web page structure","Operating system"],1],
+   ["Machine learning model enna seyyum?",["Data patterns kathukkum","Phone charge pannum","Keyboard design pannum"],0]
+  ]
+ }
+};
+
+let language="en";
+let state=JSON.parse(localStorage.getItem("edubridge")||'{"done":[],"attempts":0,"best":0}');
+let qIndex=0;
+let answered=false;
+
+function save(){
+ localStorage.setItem("edubridge",JSON.stringify(state));
+ updateStats();
+}
+
+function renderCourses(){
+ const t=translations[language];
+ document.getElementById("courses").innerHTML=t.courses.map((c,i)=>`
+ <article class="card">
+  <div class="course-icon">${c[0]}</div>
+  <h3>${c[1]}</h3>
+  <p>${c[2]}</p>
+  <div class="progress"><div class="bar" style="width:${state.done.includes(i)?100:0}%"></div></div>
+  <button onclick="learn(${i})">${state.done.includes(i)?"✓ Completed":c[3]}</button>
+ </article>`).join("");
+}
+
+function learn(i){
+ const t=translations[language];
+ const lessons=[
+  "Python stores information in variables. Example: name = 'Dhaya'. A loop repeats instructions.",
+  "HTML creates page structure. CSS controls colours, spacing, fonts and layout.",
+  "Artificial intelligence helps computers perform tasks. Machine learning finds patterns in data."
+ ];
+ alert(t.courses[i][1]+"\n\n"+lessons[i]);
+ if(!state.done.includes(i)) state.done.push(i);
+ save();
+ renderCourses();
+}
+
+function updateStats(){
+ const t=translations[language];
+ document.getElementById("courseCount").textContent=state.done.length+" / 3";
+ document.getElementById("quizCount").textContent=state.attempts;
+ document.getElementById("scoreCount").textContent=state.best+"%";
+ const percent=Math.round(state.done.length/3*100);
+ document.getElementById("progressBar").style.width=percent+"%";
+ document.getElementById("progressLabel").textContent=percent+"% completed";
+ document.getElementById("completedText").textContent=t.completedText;
+ document.getElementById("quizText").textContent=t.quizText;
+ document.getElementById("scoreText").textContent=t.scoreText;
+}
+
+function renderQuiz(){
+ const t=translations[language];
+ const q=t.questions[qIndex];
+ document.getElementById("question").textContent=q[0];
+ document.getElementById("quizOptions").innerHTML=q[1].map((option,i)=>
+ `<button style="display:block;width:100%;text-align:left;margin:8px 0;background:#edf3fc;color:#17243b" onclick="checkAnswer(${i})">${String.fromCharCode(65+i)}. ${option}</button>`
+ ).join("");
+ document.getElementById("quizResult").textContent="";
+ answered=false;
+}
+
+function checkAnswer(i){
+ if(answered)return;
+ answered=true;
+ const t=translations[language];
+ const correct=t.questions[qIndex][2]===i;
+ state.attempts++;
+ if(correct) state.best=Math.max(state.best,Math.round(100/1));
+ document.getElementById("quizResult").textContent=correct?"✅ Correct! Well done!":"❌ Not quite. Try the next question!";
+ save();
+}
+
+function nextQuestion(){
+ qIndex=(qIndex+1)%translations[language].questions.length;
+ renderQuiz();
+}
+
+function askTutor(){
+ const q=document.getElementById("questionInput").value.trim().toLowerCase();
+ const box=document.getElementById("answer");
+ if(!q){alert("Please type a question first.");return;}
+ const answers=[
+  [/python/,"Python is a programming language. It is popular for AI, data analysis and automation. Example: print('Hello World')"],
+  [/html/,"HTML is used to structure web pages. Headings use <h1> and paragraphs use <p>."],
+  [/machine learning|\\bml\\b/,"Machine learning allows computers to learn patterns from examples and data."],
+  [/\bai\b|artificial intelligence/,"Artificial intelligence (AI) is technology that enables computers to perform tasks that usually require human intelligence."],
+  [/css/,"CSS styles web pages. It controls colours, fonts, spacing and responsive layouts."],
+  [/loop/,"A loop repeats instructions. Python examples include for loops and while loops."],
+  [/variable/,"A variable stores a value. Example in Python: age = 18"]
+ ];
+ let result="I am a simple demo tutor. Try asking about Python, HTML, CSS, AI, variables or loops.";
+ for(const item of answers){if(item[0].test(q)){result=item[1];break;}}
+ box.textContent=result;
+ box.style.display="block";
+}
+
+function toggleLanguage(){
+ language=language==="en"?"ta":"en";
+ const t=translations[language];
+ document.getElementById("langBtn").textContent=language==="en"?"தமிழ்":"English";
+ ["welcome","intro","explore","courseTitle","quizTitle","tutorTitle","tutorIntro","askBtn","demoNote","progressTitle","progressDescription","resetBtn","nextBtn"].forEach(id=>{
+  const key=id;
+  if(t[key])document.getElementById(id).textContent=t[key];
+ });
+ document.getElementById("questionInput").placeholder=t.placeholder;
+ renderCourses();
+ renderQuiz();
+ updateStats();
+}
+
+function resetProgress(){
+ if(!confirm("Reset all saved learning progress and quiz attempts?"))return;
+ state={done:[],attempts:0,best:0};
+ save();renderCourses();renderQuiz();
+}
+
+renderCourses();
+renderQuiz();
+updateStats();
+</script>
+</body>
+</html>
